@@ -1,0 +1,60 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(bodyParser.json());
+app.use(cors());
+
+// MongoDB bağlantısı
+mongoose.connect('mongodb://localhost:27017/thalassaStay', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Kullanıcı Modeli
+const UserSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    password: String
+});
+const User = mongoose.model('User', UserSchema);
+
+// API Uç Noktaları
+
+// Kullanıcı Kaydı
+app.post('/api/register', async (req, res) => {
+    const { name, email, password } = req.body;
+    try {
+        const newUser = new User({ name, email, password });
+        await newUser.save();
+        res.status(201).send('Kullanıcı başarıyla kaydedildi');
+    } catch (err) {
+        res.status(500).send('Kayıt sırasında hata oluştu');
+    }
+});
+
+// Ev Modeli
+const PropertySchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    image: String,
+    price: Number
+});
+const Property = mongoose.model('Property', PropertySchema);
+
+// Ev Listeleme
+app.get('/api/properties', async (req, res) => {
+    try {
+        const properties = await Property.find();
+        res.status(200).json(properties);
+    } catch (err) {
+        res.status(500).send('Evler alınırken hata oluştu');
+    }
+});
+
+// Sunucu Başlatma
+app.listen(PORT, () => {
+    console.log(`Sunucu ${PORT} portunda çalışıyor`);
+});

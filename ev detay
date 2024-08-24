@@ -1,0 +1,11 @@
+const value: boolean = true;
+const pattern: RegExp = /test/;
+const testString: string = 'test string';
+
+if (value) {
+    console.log('Geçerli'); // boolean değer kontrolü
+}
+
+if (pattern.test(testString)) {
+    console.log('Dize, düzenli ifadeyi karşılıyor'); // RegExp kontrolü
+}
